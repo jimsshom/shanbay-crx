@@ -35,8 +35,14 @@ function renderEnDef_sn(sn) {
 function renderEnDef_text(text) {
     text = text.replace(/{bc}/g, ':');
     text = text.replace(/{it}/g, '').replace(/{\/it}/g, '');
+    //{dx}see {dxt|lamb|lamb|illustration}{/dx}
+    text = text.replace(/{dx}.*{\/dx}/g, '');
+    //{dx_def}see {dxt|disparate||1}{/dx_def} 
+    text = text.replace(/{dx_def}.*{\/dx_def}/g, '');
     //{sx|oppose||}
-    text = text.replace(/{sx\|([\w-]+)\|\|}/g, function($0,$1) {return $0.replace($0, $1.toUpperCase());})
+    text = text.replace(/{sx\|([\s\w-]+)\|\|.*}/g, function($0,$1) {return $0.replace($0, $1.toUpperCase());});
+    //{a_link|tribute}
+    text = text.replace(/{a_link\|([\w-]+)}/g, "$1");
     //:{d_link|initiated|initiate:1} 
     text = text.replace(/{d_link\|([\w-]+)\|.*}/g, "$1");
     return '<div class="span7">' + text + '</div>';
@@ -45,7 +51,7 @@ function renderEnDef_text(text) {
 function renderEnDef_vis(vis) {
     vis = vis.replace(/{it}/g, '<i>').replace(/{\/it}/g, '</i>');
     vis = vis.replace(/{wi}/g, '<i>').replace(/{\/wi}/g, '</i>');
-    vis = '<span style="color: blue">' + vis + '</span>';
+    vis = '<span style="color: #08c">//' + vis + '</span>';
     return '<div class="span7">' + vis + '</div>';
 }
 
