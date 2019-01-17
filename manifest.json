@@ -30,6 +30,7 @@
       "js": [
         "js/jquery.min.js",
         "js/common.js",
+        "js/dictionaries/format.js",
         "js/dictionaries/etymology.js",
         "js/main.js"
       ]

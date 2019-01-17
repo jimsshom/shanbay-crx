@@ -88,7 +88,7 @@ function getKey() {
     return keys[Math.floor(Math.random() * keys.length)];
 }
 function websterUrl(term) {
-    return 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/' + term + '?key=' + getKey()
+    return 'http://www.dictionaryapi.com/api/v3/references/collegiate/json/' + term + '?key=' + getKey()
 }
 function thesaurusUrl(term) {
     return 'http://www.dictionaryapi.com/api/v1/references/thesaurus/xml/' + term + '?key=7269ef5b-4d9f-4d38-ac7e-f1ed6e5568f7'
@@ -110,32 +110,50 @@ function getOnlineWebster(term, url, callback) {
     xhr.open("GET", url, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
-            let word = $($.parseXML(xhr.responseText)).find('entry').filter(function () {
-                return $(this).find('ew').text().trim().length <= term.length + 2
+            let ori_word_json = JSON.parse(xhr.responseText).filter(function(obj) {
+                return obj['hwi'] != undefined;
+            }).filter(function(obj) {
+                return obj['hwi']['hw'].replace(/\*/g, '') == term;
             });
-            let derivatives = word.find('ure').map(function (i, e) {
-                return e.textContent.replace(/\*/g, '·')
+            //console.log(ori_word_json);
+
+            let result = [];
+
+            Object.keys(ori_word_json).forEach(function(k) {
+                let word = {};
+                word['fl'] = ori_word_json[k]['fl'];
+                word['def'] = ori_word_json[k]['def'];
+                result.push(word);
             });
-            if (undefined != derivatives) derivatives = derivatives.toArray().toString().replace(/,/g, ", ");
-            let syns = word.find('sx').map(function (i, e) {
-                return e.textContent.replace(/\*/g, '·')
-            });
-            if (undefined != syns) syns = syns.toArray().toString().replace(/,/g, ", ");
-            let roots = word.children('et');
-            let resp_word = word.children('ew');
-            let hw = word.children('hw'); // 音节划分
-            let fls = word.children('fl'); //lexical class 词性
-            let defs = word.children('def');
-            callback(term, {
-                derivatives: derivatives,
-                syns: syns,
-                roots: roots,
-                fls: fls,
-                defs: defs,
-                hw: hw,
-                ew: resp_word,
-                responseText: xhr.responseText
-            });
+
+            callback(term, result);
+
+            // let word = $($.parseXML(xhr.responseText)).find('entry').filter(function () {
+            //     return $(this).find('ew').text().trim().length <= term.length + 2
+            // });
+            // let derivatives = word.find('ure').map(function (i, e) {
+            //     return e.textContent.replace(/\*/g, '·')
+            // });
+            // if (undefined != derivatives) derivatives = derivatives.toArray().toString().replace(/,/g, ", ");
+            // let syns = word.find('sx').map(function (i, e) {
+            //     return e.textContent.replace(/\*/g, '·')
+            // });
+            // if (undefined != syns) syns = syns.toArray().toString().replace(/,/g, ", ");
+            // let roots = word.children('et');
+            // let resp_word = word.children('ew');
+            // let hw = word.children('hw'); // 音节划分
+            // let fls = word.children('fl'); //lexical class 词性
+            // let defs = word.children('def');
+            // callback(term, {
+            //     derivatives: derivatives,
+            //     syns: syns,
+            //     roots: roots,
+            //     fls: fls,
+            //     defs: defs,
+            //     hw: hw,
+            //     ew: resp_word,
+            //     responseText: xhr.responseText
+            // });
         }
     };
     xhr.send();

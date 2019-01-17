@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         if (undefined != items[k])
                             localStorage[k] = items[k];
                     }
-                    debugLog('log', "fetched local storage from chrome.storage.sync");
+                    //debugLog('log', "fetched local storage from chrome.storage.sync");
                 } catch (e) {
                     saveToStorage();
                     console.warn(e);

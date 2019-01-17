@@ -19,7 +19,7 @@ function findDerivativesInContentPage(){
 }
 
 chrome.runtime.onMessage.addListener(function (resp, sender, sendResponse) {
-    debugLog('log', "received\n");
+    debugLog('log', "received: " + resp.callback);
     debugLog('log', resp.data);
     switch (resp.callback) {
         case 'showEtymology':
@@ -80,57 +80,67 @@ function showEtymology(term, json){
  * 通过在线词典查询，替换同义词、词根、词性、解释等。
  */
 function showDerivatives(originalTerm, json) {
+    //console.log(JSON.stringify(json));
     if (getCurrentTerm() != originalTerm) {
         return;
     }
 
-    let word = $($.parseXML(json.responseText)).find('entry').filter(function () {
-        return $(this).find('ew').text().trim().length <= originalTerm.length
-    });
-    let derivatives = word.find('ure').map(function (i, e) {
-        return e.textContent.replace(/\*/g, '·')
-    });
-    if (undefined != derivatives) derivatives = derivatives.toArray().toString().replace(/,/g, ", ");
-    let syns = word.find('sx').map(function (i, e) {
-        return e.textContent.replace(/\*/g, '·')
-    });
-    if (undefined != syns) syns = syns.toArray().toString().replace(/,/g, ", ");
+    let endefHtml = renderEnDef(json);
+    if (ls()['web_en'] == 'yes') {
+        let endef = $("#review-definitions .endf");
+        endef.html('');
+        endef.append(endefHtml);
+    }
 
-    let roots = word.children('et');
-    let resp_word = word.children('ew');
-    let hw = word.children('hw'); // 音节划分
-    let fls = word.children('fl'); //lexical class 词性
-    let defs = word.children('def');
+    // let word = $($.parseXML(json.responseText)).find('entry').filter(function () {
+    //     return $(this).find('ew').text().trim().length <= originalTerm.length
+    // });
+    // let derivatives = word.find('ure').map(function (i, e) {
+    //     return e.textContent.replace(/\*/g, '·')
+    // });
+    // if (undefined != derivatives) derivatives = derivatives.toArray().toString().replace(/,/g, ", ");
+    // let syns = word.find('sx').map(function (i, e) {
+    //     return e.textContent.replace(/\*/g, '·')
+    // });
+    // if (undefined != syns) syns = syns.toArray().toString().replace(/,/g, ", ");
 
-    let term = $('#learning_word .word .content.pull-left');
-    let small = term.find('small')[0].outerHTML;
+    // let roots = word.children('et');
+    // let resp_word = word.children('ew');
+    // let hw = word.children('hw'); // 音节划分
+    // let fls = word.children('fl'); //lexical class 词性
+    // let defs = word.children('def');
 
-    let responseWord = word.find('ew').text();
-    if (getCurrentTerm().length <= 4 + responseWord.length) {
-        addButtons();
-        if (hw.length > 0 && ls()['show_syllabe'] != 'no' && hw[0].textContent.replace(/\*/g, '') == originalTerm) term.html((hw[0].textContent.replace(/\*/g, '·') + small));
-        if (undefined != roots && 0 < roots.length && ls()['etym'] == 'webster' && $('#roots .exist').length == 0) {
-            let r = $("#roots .alert").addClass("well exist").html(roots);
-            if (0 < r.length) r.html(r.html().replace(/<\/it>/g, "</span>").replace(/<it>/g, "<span class='foreign'>"));
-            r.removeClass("alert");
-            if (!$("#roots .alert").length > 0 && ls()['root2note'] == 'YES') addToNote("#roots a.note-button");
-        } else if (ls()['etym'] == 'webster') getEtymology();
-        if (undefined != derivatives && "" != derivatives.trim() && $('#affix .exist').length == 0)
-            $("#affix .alert").addClass("well exist").removeClass("alert").html(derivatives + "; <br/>" + derivatives.replace(/·/g, '') + "; <br/>" + syns);
-        else if ($('#affix .word').length == 0)$("#affix").hide();
-        if (!$("#affix .alert").hasClass("alert") && ls()['afx2note'] == 'YES') addToNote("#affix a.note-button");
-        if (ls()['web_en'] == 'yes') {
-            let endef = $("#review-definitions .endf");
-            endef.html('');
-            if (fls.length == defs.length) fls.each(function (i) {
-                endef.append($('<div class="span1"><span class="part-of-speech label">').find('span').html($(fls[i]).text().substr(0, 4)).parent());
-                let def = $('<ol class="span7">');
-                $(defs[i]).find('dt').each(function () {
-                    def.append($('<li class="definition"><span class="content">').find('span').html($(this).text()).parent())
-                });
-                endef.append(def)
-            })
-        }
-    } else if (ls()['etym'] == 'webster') getEtymology()
+    // let term = $('#learning_word .word .content.pull-left');
+    // let small = term.find('small')[0].outerHTML;
+
+    // let responseWord = word.find('ew').text();
+
+
+    // if (getCurrentTerm().length <= 4 + responseWord.length) {
+    //     addButtons();
+    //     if (hw.length > 0 && ls()['show_syllabe'] != 'no' && hw[0].textContent.replace(/\*/g, '') == originalTerm) term.html((hw[0].textContent.replace(/\*/g, '·') + small));
+    //     if (undefined != roots && 0 < roots.length && ls()['etym'] == 'webster' && $('#roots .exist').length == 0) {
+    //         let r = $("#roots .alert").addClass("well exist").html(roots);
+    //         if (0 < r.length) r.html(r.html().replace(/<\/it>/g, "</span>").replace(/<it>/g, "<span class='foreign'>"));
+    //         r.removeClass("alert");
+    //         if (!$("#roots .alert").length > 0 && ls()['root2note'] == 'YES') addToNote("#roots a.note-button");
+    //     } else if (ls()['etym'] == 'webster') getEtymology();
+    //     if (undefined != derivatives && "" != derivatives.trim() && $('#affix .exist').length == 0)
+    //         $("#affix .alert").addClass("well exist").removeClass("alert").html(derivatives + "; <br/>" + derivatives.replace(/·/g, '') + "; <br/>" + syns);
+    //     else if ($('#affix .word').length == 0)$("#affix").hide();
+    //     if (!$("#affix .alert").hasClass("alert") && ls()['afx2note'] == 'YES') addToNote("#affix a.note-button");
+    //     if (ls()['web_en'] == 'yes') {
+    //         let endef = $("#review-definitions .endf");
+    //         endef.html('');
+    //         if (fls.length == defs.length) fls.each(function (i) {
+    //             endef.append($('<div class="span1"><span class="part-of-speech label">').find('span').html($(fls[i]).text().substr(0, 4)).parent());
+    //             let def = $('<ol class="span7">');
+    //             $(defs[i]).find('dt').each(function () {
+    //                 def.append($('<li class="definition"><span class="content">').find('span').html($(this).text()).parent())
+    //             });
+    //             endef.append(def)
+    //         })
+    //     }
+    // } else if (ls()['etym'] == 'webster') getEtymology()
 }
 
