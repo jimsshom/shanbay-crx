@@ -52,16 +52,23 @@ function formatString(origin) {
  */
 function renderWordChangesAndPhrase(response) {
     if(response){
-        if(ls()['exchanges'] == 'yes' && response.exchanges.length > 1){
-            let exchanges = [
-                "复数："+formatString(response.baesInfo.exchange.word_pl[0]),
-                "过去式："+formatString(response.baesInfo.exchange.word_past[0]),
-                "过去分词："+formatString(response.baesInfo.exchange.word_done[0]),
-                "现在分词："+formatString(response.baesInfo.exchange.word_ing[0]),
-                "第三人称单数："+formatString(response.baesInfo.exchange.word_third[0])
-            ].map(function (exchange) {
-                return "<p>"+exchange+"<p/>"
-            }).join("");
+        if(ls()['exchanges'] == 'yes' && response.exchanges.length > 1) {
+            let exchanges = ''
+            if (response.baesInfo.exchange.word_pl[0] != undefined) {
+                exchanges += "<p>复数：" + response.baesInfo.exchange.word_pl[0] + '</p>';
+            }
+            if (response.baesInfo.exchange.word_past[0] != undefined) {
+                exchanges += "<p>过去式：" + response.baesInfo.exchange.word_past[0] + '</p>';
+            }
+            if (response.baesInfo.exchange.word_done[0] != undefined) {
+                exchanges += "<p>过去分词：" + response.baesInfo.exchange.word_done[0] + '</p>';
+            }
+            if (response.baesInfo.exchange.word_ing[0] != undefined) {
+                exchanges += "<p>现在分词：" + response.baesInfo.exchange.word_ing[0] + '</p>';
+            }
+            if (response.baesInfo.exchange.word_third[0] != undefined) {
+                exchanges += "<p>第三人称单数：" + response.baesInfo.exchange.word_third[0] + '</p>';
+            }
             let $exchanges = compileBoxHtml("exchanges","单词变形",exchanges);
 
             // insert to dom
