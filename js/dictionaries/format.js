@@ -34,17 +34,18 @@ function renderEnDef_sn(sn) {
 
 function renderEnDef_text(text) {
     text = text.replace(/{bc}/g, ':');
-    text = text.replace(/{it}/g, '').replace(/{\/it}/g, '');
+    text = text.replace(/{it}/g, '').replace(/{\/it}/g, '').replace(/{sc}/g, '').replace(/{\/sc}/g, '');
     //{dx}see {dxt|lamb|lamb|illustration}{/dx}
     text = text.replace(/{dx}.*{\/dx}/g, '');
     //{dx_def}see {dxt|disparate||1}{/dx_def} 
     text = text.replace(/{dx_def}.*{\/dx_def}/g, '');
     //{sx|oppose||}
-    text = text.replace(/{sx\|([\s\w-]+)\|\|.*}/g, function($0,$1) {return $0.replace($0, $1.toUpperCase());});
+    //{sx|introverted|introverted|}
+    text = text.replace(/{sx\|(.*)\|.*\|.*}/g, function($0,$1) {return $0.replace($0, $1.toUpperCase());});
     //{a_link|tribute}
     text = text.replace(/{a_link\|([\w-]+)}/g, "$1");
     //:{d_link|initiated|initiate:1} 
-    text = text.replace(/{d_link\|([\w-]+)\|.*}/g, "$1");
+    text = text.replace(/{d_link\|(.*)\|.*}/g, "$1");
     return '<div class="span7">' + text + '</div>';
 }
 
@@ -112,6 +113,8 @@ function renderEnDef_sseq(sseq) {
                 content += renderEnDef_sense(sseq[k][i][1]);
             } else if (sseq[k][i][0] == 'pseq') {
                 content += renderEnDef_pseq(sseq[k][i][1]);
+            } else if (sseq[k][i][0] == 'bs') {
+                content += renderEnDef_sense(sseq[k][i][1]['sense']);
             }
         });
     });

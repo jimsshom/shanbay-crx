@@ -86,7 +86,7 @@ function showDerivatives(originalTerm, json) {
     }
 
     let endefHtml = renderEnDef(json);
-    if (ls()['web_en'] == 'yes') {
+    if (ls()['web_en'] == 'yes' && endefHtml.trim() != '') {
         let endef = $("#review-definitions .endf");
         endef.html('');
         endef.append(endefHtml);
