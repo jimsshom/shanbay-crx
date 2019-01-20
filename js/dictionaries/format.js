@@ -36,16 +36,16 @@ function renderEnDef_text(text) {
     text = text.replace(/{bc}/g, ':');
     text = text.replace(/{it}/g, '').replace(/{\/it}/g, '').replace(/{sc}/g, '').replace(/{\/sc}/g, '');
     //{dx}see {dxt|lamb|lamb|illustration}{/dx}
-    text = text.replace(/{dx}.*{\/dx}/g, '');
+    text = text.replace(/{dx}.*?{\/dx}/g, '');
     //{dx_def}see {dxt|disparate||1}{/dx_def} 
-    text = text.replace(/{dx_def}.*{\/dx_def}/g, '');
+    text = text.replace(/{dx_def}.*?{\/dx_def}/g, '');
     //{sx|oppose||}
     //{sx|introverted|introverted|}
-    text = text.replace(/{sx\|(.*)\|.*\|.*}/g, function($0,$1) {return $0.replace($0, $1.toUpperCase());});
+    text = text.replace(/{sx\|(.*?)\|.*?\|.*?}/g, function($0,$1) {return $0.replace($0, $1.toUpperCase());});
     //{a_link|tribute}
-    text = text.replace(/{a_link\|([\w-]+)}/g, "$1");
+    text = text.replace(/{a_link\|(.*?)}/g, "$1");
     //:{d_link|initiated|initiate:1} 
-    text = text.replace(/{d_link\|(.*)\|.*}/g, "$1");
+    text = text.replace(/{d_link\|(.*?)\|.*?}/g, "$1");
     return '<div class="span7">' + text + '</div>';
 }
 
